@@ -23,26 +23,26 @@ RUN dpkg-reconfigure locales
 RUN rm /bin/sh && ln -s bash /bin/sh
 
 # Add you users to sudoers to be able to install other packages in the container
-ARG USER
-RUN echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+#ARG USER
+RUN echo "rdkb ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Set the arguments for host_id and user_id to be able to save the build artifacts
 # outside the container, on host directories, as docker volumes.
-ARG host_uid \
-host_gid
-RUN groupadd -g $host_gid nxp && \
-useradd -g $host_gid -m -s /bin/bash -u $host_uid $USER
+#ARG host_uid \
+#host_gid
+RUN groupadd -g 3456 nxp && \
+useradd -g 3456 -m -s /bin/bash -u 1234 rdkb
 
 # Yocto builds should run as a normal user.
-USER $USER
+USER rdkb
 
 # Create build directory
-RUN mkdir /home/${USER}/build
+RUN mkdir /home/rdkb/build
 
 #RDK-B repo setup
 RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
 RUN mkdir ~/bin
-ENV PATH="/home/$USER/bin:$PATH"
+ENV PATH="/home/rdkb/bin:$PATH"
 RUN curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
 RUN chmod a+x ~/bin/repo
 
