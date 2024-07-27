@@ -24,7 +24,7 @@ RUN rm /bin/sh && ln -s bash /bin/sh
 
 # Add you users to sudoers to be able to install other packages in the container
 #ARG USER
-RUN echo "rdkb ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN echo "azureuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Set the arguments for host_id and user_id to be able to save the build artifacts
 # outside the container, on host directories, as docker volumes.
@@ -42,7 +42,7 @@ RUN mkdir /home/azureuser/build
 #RDK-B repo setup
 RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
 RUN mkdir ~/bin
-ENV PATH="/home/azureuser/bin:$PATH"
+ENV PATH="/home/azureuser/bin:$PATH:/usr/local/bin"
 RUN curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
 RUN chmod a+x ~/bin/repo
 
