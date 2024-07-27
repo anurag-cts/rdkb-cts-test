@@ -42,7 +42,7 @@ RUN mkdir /home/azureuser/build
 #RDK-B repo setup
 RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
 RUN mkdir ~/bin
-ENV PATH="/home/azureuser/bin:$PATH:/usr/local/bin"
+ENV PATH="/home/azureuser/bin:$PATH:/usr/bin"
 RUN curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
 RUN chmod a+x ~/bin/repo
 
@@ -62,6 +62,6 @@ RUN repo init -u https://code.rdkcentral.com/r/rdkcmf/manifests -b rdkb-2024q1-k
 RUN repo sync --no-clone-bundle --no-tags
 
 RUN MACHINE=raspberrypi4-64-rdk-broadband source meta-cmf-raspberrypi/setup-environment
-
-RUN bitbake rdk-generic-broadband-image
+CMD ["bitbake", "rdk-generic-broadband-image"]
+#RUN bitbake rdk-generic-broadband-image
 
