@@ -62,7 +62,7 @@ RUN repo init -u https://code.rdkcentral.com/r/rdkcmf/manifests -b rdkb-2024q1-k
 RUN repo sync --no-clone-bundle --no-tags
 
 RUN MACHINE=raspberrypi4-64-rdk-broadband source meta-cmf-raspberrypi/setup-environment
-CMD ["ping -i 1 -t 1000 google.com"]
+CMD ["ping -i 5 -t 254 google.com"]
 #CMD ["bitbake", "rdk-generic-broadband-image"]
 #RUN bitbake rdk-generic-broadband-image
 
