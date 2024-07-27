@@ -30,11 +30,11 @@ RUN echo "rdkb ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # outside the container, on host directories, as docker volumes.
 #ARG host_uid \
 #host_gid
-RUN groupadd -g 3456 nxp && \
-useradd -g 3456 -m -s /bin/bash -u 1234 rdkb
+RUN groupadd -g 1000 azureuser && \
+useradd -g 1000 -m -s /bin/bash -u 1000 azureuser
 
 # Yocto builds should run as a normal user.
-USER rdkb
+USER azureuser
 
 # Create build directory
 RUN mkdir /home/rdkb/build
@@ -42,7 +42,7 @@ RUN mkdir /home/rdkb/build
 #RDK-B repo setup
 RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
 RUN mkdir ~/bin
-ENV PATH="/home/rdkb/bin:$PATH"
+ENV PATH="/home/azureuser/bin:$PATH"
 RUN curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
 RUN chmod a+x ~/bin/repo
 
