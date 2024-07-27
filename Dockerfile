@@ -37,7 +37,7 @@ useradd -g 1000 -m -s /bin/bash -u 1000 azureuser
 USER azureuser
 
 # Create build directory
-RUN mkdir /home/rdkb/build
+RUN mkdir /home/azureuser/build
 
 #RDK-B repo setup
 RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
@@ -50,4 +50,18 @@ RUN chmod a+x ~/bin/repo
 RUN  git config --global user.email "docker@rdk-b.com"
 RUN  git config --global user.name "Docker RDK-B"
 RUN  git config --global color.ui false 
+
+
+RUN mkdir -p ${HOME}/build/RDK-B
+#chmod 777 /opt/yocto/RDK-B
+RUN cd ${HOME}/build/RDK-B
+RUN echo ${PWD}
+
+RUN echo "repo init -u https://code.rdkcentral.com/r/rdkcmf/manifests -b ${BRANCH} -m ${MANIFEST}"
+RUN repo init -u https://code.rdkcentral.com/r/rdkcmf/manifests -b $BRANCH -m $MANIFEST
+RUN repo sync --no-clone-bundle --no-tags
+
+RUN MACHINE=$MACHINE source $SOURCE
+
+RUN bitbake rdk-generic-broadband-image
 
