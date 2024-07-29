@@ -39,7 +39,7 @@ USER azureuser
 # Create build directory
 RUN mkdir /home/azureuser/build
 
-COPY * /home/azureuser/build
+COPY --chown=azureuser * /home/azureuser/build
 
 #RDK-B repo setup
 RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
@@ -53,6 +53,5 @@ RUN  git config --global user.email "docker@rdk-b.com"
 RUN  git config --global user.name "Docker RDK-B"
 RUN  git config --global color.ui false 
 
-RUN chown azureuser  /home/azureuser/build/*
 RUN ls -lrth /home/azureuser/build
 RUN /home/azureuser/build/build_rdk-b.sh
