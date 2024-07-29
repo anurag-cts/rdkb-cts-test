@@ -39,7 +39,7 @@ USER azureuser
 # Create build directory
 RUN mkdir /home/azureuser/build
 
-COPY --chown=azureuser * /home/azureuser/build
+COPY --chown=azureuser --chmod=0755 * /home/azureuser/build
 
 #RDK-B repo setup
 RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
