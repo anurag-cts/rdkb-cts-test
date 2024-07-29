@@ -39,7 +39,8 @@ USER azureuser
 # Create build directory
 RUN mkdir /home/azureuser/build
 
-COPY --chown=azureuser --chmod=0755 * /home/azureuser/build
+COPY --chown=azureuser --chmod=0755 build_rdk-b.sh /home/azureuser/build
+COPY --chown=azureuser --chmod=0755 prepare_artifacts_QEMU_deploy.sh /home/azureuser/build
 
 #RDK-B repo setup
 RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
@@ -102,6 +103,9 @@ USER azureuser
 # Create build directory
 RUN mkdir /home/azureuser/build
 
+COPY --chown=azureuser --chmod=0755 run_qemu_rdk-b.sh /home/azureuser/build
+
 COPY --from=build /home/azureuser/build/rdk-b_artifacts.tar.gz /home/azureuser/build/rdk-b_artifacts.tar.gz
+
 CMD ["/usr/bin/ping", "-i", "5", "-t", "254", "google.com"]
 #CMD ["/home/azureuser/build/run_qemu_rdk-b.sh"]
