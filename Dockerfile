@@ -53,4 +53,5 @@ RUN  git config --global user.email "docker@rdk-b.com"
 RUN  git config --global user.name "Docker RDK-B"
 RUN  git config --global color.ui false 
 
+RUN ls -lrth /home/azureuser/build
 RUN /home/azureuser/build/build_rdk-b.sh
