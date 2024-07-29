@@ -54,4 +54,4 @@ RUN  git config --global user.name "Docker RDK-B"
 RUN  git config --global color.ui false 
 
 RUN ls -lrth /home/azureuser/build
-CMD ["/home/azureuser/build/build_rdk-b.sh","rdkb-extsrc.xml", "rdkb-2024q1-kirkstone", "raspberrypi4-64-rdk-broadband", "meta-cmf-raspberrypi/setup-environment"]
+RUN ["/home/azureuser/build/build_rdk-b.sh","rdkb-extsrc.xml", "rdkb-2024q1-kirkstone", "raspberrypi4-64-rdk-broadband", "meta-cmf-raspberrypi/setup-environment"]
