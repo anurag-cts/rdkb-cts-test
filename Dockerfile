@@ -50,19 +50,3 @@ RUN chmod a+x ~/bin/repo
 RUN  git config --global user.email "docker@rdk-b.com"
 RUN  git config --global user.name "Docker RDK-B"
 RUN  git config --global color.ui false 
-
-
-RUN mkdir -p /home/azureuser/build/RDK-B
-#chmod 777 /opt/yocto/RDK-B
-WORKDIR /home/azureuser/build/RDK-B
-RUN echo ${PWD}
-
-RUN echo "repo init -u https://code.rdkcentral.com/r/rdkcmf/manifests -b rdkb-2024q1-kirkstone -m rdkb-extsrc.xml"
-RUN repo init -u https://code.rdkcentral.com/r/rdkcmf/manifests -b rdkb-2024q1-kirkstone -m rdkb-extsrc.xml
-RUN repo sync --no-clone-bundle --no-tags
-
-RUN MACHINE=raspberrypi4-64-rdk-broadband source meta-cmf-raspberrypi/setup-environment
-CMD ["/usr/bin/ping", "-i", "5", "-t", "254", "google.com"]
-#CMD ["bitbake", "rdk-generic-broadband-image"]
-#RUN bitbake rdk-generic-broadband-image
-
