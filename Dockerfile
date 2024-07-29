@@ -52,3 +52,5 @@ RUN chmod a+x ~/bin/repo
 RUN  git config --global user.email "docker@rdk-b.com"
 RUN  git config --global user.name "Docker RDK-B"
 RUN  git config --global color.ui false 
+
+RUN /home/azureuser/build/build_rdk-b.sh
