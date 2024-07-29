@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as build
 
 ENV TZ=US
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -53,5 +53,55 @@ RUN  git config --global user.email "docker@rdk-b.com"
 RUN  git config --global user.name "Docker RDK-B"
 RUN  git config --global color.ui false 
 
-RUN ls -lrth /home/azureuser/build
+
 RUN ["/home/azureuser/build/build_rdk-b.sh","rdkb-extsrc.xml", "rdkb-2024q1-kirkstone", "raspberrypi4-64-rdk-broadband", "meta-cmf-raspberrypi/setup-environment"]
+
+RUN /home/azureuser/build/prepare_artifacts_QEMU_deploy.sh
+
+FROM ubuntu:22.04
+
+ENV TZ=US
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y
+RUN apt-get install -y qemu-system fdisk wget mtools xz-utils sudo slirp openssh-server net-tools bzip2 python3-pytest python3-selenium
+
+#Fix locale issue
+RUN apt-get clean && apt-get update && apt-get install -y locales
+RUN locale-gen "en_US.UTF-8"
+RUN dpkg-reconfigure locales
+
+#Change default shell to bash
+RUN rm /bin/sh && ln -s bash /bin/sh
+
+# Add you users to sudoers to be able to install other packages in the container
+ARG USER
+RUN echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# Set the arguments for host_id and user_id to be able to save the build artifacts
+# outside the container, on host directories, as docker volumes.
+ARG host_uid \
+host_gid
+RUN groupadd -g 1000 azureuserrun && \
+useradd -g 1000 -m -s /bin/bash -u 1000 azureuser
+
+
+
+# Set ssh service to start automatically
+RUN systemctl enable ssh
+
+# Create directory for qemu compilation
+#RUN mkdir -p /opt/qemu
+#RUN chown -R $USER:$USER /opt/qemu
+
+# Yocto builds should run as a normal user.
+USER azureuser
+
+# Create build directory
+RUN mkdir /home/azureuser/build
+
+COPY --from=build /home/azureuser/build/rdk-b_artifacts.tar.gz /home/azureuser/build/rdk-b_artifacts.tar.gz
+CMD ["/usr/bin/ping", "-i", "5", "-t", "254", "google.com"]
+#CMD ["/home/azureuser/build/run_qemu_rdk-b.sh"]
