@@ -25,8 +25,8 @@ RUN echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # outside the container, on host directories, as docker volumes.
 ARG host_uid \
 host_gid
-RUN groupadd -g $host_gid nxp && \
-useradd -g $host_gid -m -s /bin/bash -u $host_uid $USER
+RUN groupadd -g 1000 azureuserrun && \
+useradd -g 1000 -m -s /bin/bash -u 1000 azureuser
 
 # Set ssh service to start automatically
 RUN systemctl enable ssh
@@ -36,7 +36,7 @@ RUN systemctl enable ssh
 #RUN chown -R $USER:$USER /opt/qemu
 
 # Yocto builds should run as a normal user.
-USER $USER
+USER azureuser
 
 # Create build directory
-RUN mkdir /home/${USER}/build
+RUN mkdir /home/azureuser/build
