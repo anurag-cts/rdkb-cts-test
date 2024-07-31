@@ -1,13 +1,18 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as build
 
 ENV TZ=US
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update -y
-RUN apt-get install -y qemu-system fdisk wget mtools xz-utils sudo slirp openssh-server net-tools bzip2 python3-pytest python3-selenium
+# install app dependencies
+RUN apt-get update && apt-get install -y gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python2 python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint xterm bmap-tools
+
+RUN apt-get update && apt-get install -y git cmake autoconf texinfo openjdk-8-jdk openjdk-8-jre m4 libtool libtool-bin curl pkg-config lib32z1 doxygen lz4 zstd sudo
+
+#Create link for python
+RUN ln /usr/bin/python2 /usr/bin/python
 
 #Fix locale issue
 RUN apt-get clean && apt-get update && apt-get install -y locales
@@ -18,25 +23,33 @@ RUN dpkg-reconfigure locales
 RUN rm /bin/sh && ln -s bash /bin/sh
 
 # Add you users to sudoers to be able to install other packages in the container
-ARG USER
-RUN echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+#ARG USER
+RUN echo "azureuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Set the arguments for host_id and user_id to be able to save the build artifacts
 # outside the container, on host directories, as docker volumes.
-ARG host_uid \
-host_gid
-RUN groupadd -g 1000 azureuserrun && \
+#ARG host_uid \
+#host_gid
+RUN groupadd -g 1000 azureuser && \
 useradd -g 1000 -m -s /bin/bash -u 1000 azureuser
-
-# Set ssh service to start automatically
-RUN systemctl enable ssh
-
-# Create directory for qemu compilation
-#RUN mkdir -p /opt/qemu
-#RUN chown -R $USER:$USER /opt/qemu
 
 # Yocto builds should run as a normal user.
 USER azureuser
 
 # Create build directory
 RUN mkdir /home/azureuser/build
+
+COPY --chown=azureuser --chmod=0755 build_rdk-b.sh /home/azureuser/build
+COPY --chown=azureuser --chmod=0755 prepare_artifacts_QEMU_deploy.sh /home/azureuser/build
+
+#RDK-B repo setup
+RUN echo '<<<<<<<<<< Install repo >>>>>>>>>'
+RUN mkdir ~/bin
+ENV PATH="/home/azureuser/bin:$PATH:/usr/bin"
+RUN curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+RUN chmod a+x ~/bin/repo
+
+#Git user configuration
+RUN  git config --global user.email "docker@rdk-b.com"
+RUN  git config --global user.name "Docker RDK-B"
+RUN  git config --global color.ui false 
